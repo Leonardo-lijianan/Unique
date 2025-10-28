@@ -27,4 +27,5 @@
 
 # How to Contact Us?
 1. Add me QQ : 3572113478
-2. Send e-mail to Kkasi2007@outlook.com
+2. Send e-mail to ~~Kkasi2007@outlook.com~~ leonardo.lijianan@outlook.com
+tips: The two internet name 'Kkasi666' and 'leonardo' are belong the same person. And 'kkasi666' is not used now.
