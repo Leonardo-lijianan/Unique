@@ -3,8 +3,8 @@
 // Author: Kkasi
 // This is defined some about file's operate.
 
-#ifndef UNIQUE_UCM_FILEOPERATE_H_
-#define UNIQUE_UCM_FILEOPERATE_H_
+#ifndef UNIQUE_UVM_FILEOPERATE_H_
+#define UNIQUE_UVM_FILEOPERATE_H_
 
 #include <string>
 
@@ -14,4 +14,4 @@ std::string getWorkPath();
 
 } // namespace virtualMachine
 
-#endif // UNIQUE_UCM_FILEAPI_H_
+#endif // UNIQUE_UVM_FILEAPI_H_

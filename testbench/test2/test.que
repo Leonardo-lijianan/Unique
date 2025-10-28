@@ -1,0 +1,5 @@
+apple = 6
+banana = apple + apple +100
+print("666")
+print("123")
+print("qwe")

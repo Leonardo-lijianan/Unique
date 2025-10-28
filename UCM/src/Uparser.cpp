@@ -10,7 +10,7 @@
 namespace compiler {
 
 Parser::Parser()
-	: pos(0), stat(nullptr),parser_state(RUNNING) {
+	: pos(0), prog(nullptr),parser_state(RUNNING) {
 }
 
 Parser::~Parser() {
@@ -18,11 +18,11 @@ Parser::~Parser() {
 
 void Parser::throwSyntaxWrong(std::string exceptedStr) {
 	if(pos>=tokenList_Main.getSize()) pos=pos-1;
-	printf("unique.compiler.parser.SyntaxWrong Error:\n"\
-	"\tIn %d:%d, excpted %s, before token'%s'\n"        \
+	printf("unique.compiler.parser.SyntaxWrong Error:\n"               \
+	"\tIn %d:%d, excpted %s, before token'%s'\n"                       \
 	,tokenList_Main.getToken(getPos()).getLine()                       \
 	,tokenList_Main.getToken(getPos()).getRow()                        \
-	,exceptedStr.c_str()                                \
+	,exceptedStr.c_str()                                               \
 	,tokenList_Main.getToken(getPos()).getData().c_str()               );
 	exit(SyntaxWrong);
 }
@@ -33,6 +33,14 @@ bool Parser::isNumTerminal() {
 		return false;
 	}
 	return tokenList_Main.getToken(getPos()).getType()==T_NUM;
+}
+
+bool Parser::isStrTerminal() {
+	if(parser_state==ENDING) {
+		//throwSyntaxWrong("OOR(find num terminal)");
+		return false;
+	}
+	return tokenList_Main.getToken(getPos()).getType()==T_STR;
 }
 
 bool Parser::isIdnTerminal() {
@@ -104,12 +112,20 @@ bool Parser::isExprStart() {
 	return isTermStart();
 }
 
-bool Parser::isAssignStart() {
+bool Parser::isAssignStatStart() {
 	return isIdnTerminal();
 }
 
-bool Parser::isStatStart() {
-	return isAssignStart();
+bool Parser::isPrintStatStart() {
+	if(parser_state==ENDING) {
+		//throwSyntaxWrong("OOR(find print func)");
+		return false;
+	}
+	return tokenList_Main.getToken(getPos()).getType()==T_KEYWORD && tokenList_Main.getToken(getPos()).getInfo() == keyword::PRINT;
+}
+
+bool Parser::isProgamStart() {
+	return isAssignStatStart() || isPrintStatStart();
 }
 
 void Parser::next() {
@@ -131,6 +147,14 @@ Terminal_Pointer Parser::getPos() {
 
 Terminal_Pointer Parser::number() {
 	if(!isNumTerminal()) {
+		throwSyntaxWrong("couldn't find num");
+		return 0x0;
+	}
+	return getPos();
+}
+
+Terminal_Pointer Parser::String() {
+	if(!isStrTerminal()) {
 		throwSyntaxWrong("couldn't find num");
 		return 0x0;
 	}
@@ -236,12 +260,12 @@ ExprNode *Parser::expr() {
 }
 
 // assign -> IDN ASS expr
-AssignNode *Parser::assign() {
-	if(!isAssignStart()) {
+AssignStatNode *Parser::assignStat() {
+	if(!isAssignStatStart()) {
 		throwSyntaxWrong("a word");
 		return 0x0;
 	} else {
-		AssignNode *ass = new AssignNode;
+		AssignStatNode *ass = new AssignStatNode;
 		ass->setIdentifier(identifier()); next();
 		if(isAssignment()) {
 			next(); // skip "="
@@ -255,33 +279,87 @@ AssignNode *Parser::assign() {
 }
 
 
-// statExpr -> assign+
-StatExprNode *Parser::statExpr() {
-	if(!isStatStart()) {
+// statExpr -> assign+ | print+
+// StatExprNode *Parser::statExpr() {
+// 	StatExprNode *prog = new StatExprNode;
+// 	while (isStatStart()) {
+// 		if(isPrintFuncStart()) {
+// 			printf("isPrint!");
+// 			exit(-100);
+// 		} else {
+// 			while (isAssignStart()) {
+// 				prog->addFactor(assign());
+// 			}
+// 		}
+// 	}
+// 	if(parser_state!=ENDING) {
+// 		throwSyntaxWrong("a word");
+// 		return 0x0;
+// 	} else if(isPrintFuncStart()) {
+// 		printf("isPrint!");
+// 		exit(-100);
+// 	} else {
+// 		StatExprNode *prog = new StatExprNode;
+// 		while (isAssignStart()) {
+// 			prog->addFactor(assign());
+// 		}
+// 		return prog;
+// 	}
+// }
+
+PrintStatNode* Parser::printStat() {
+	next(); // skip the "print"
+	if(parser_state==ENDING) {
 		throwSyntaxWrong("a word");
 		return 0x0;
 	} else {
-		StatExprNode *stat = new StatExprNode;
-		while (isAssignStart()) {
-			stat->addFactor(assign());
+		PrintStatNode* pri = new PrintStatNode;
+		if(this->isLeftPth()) {
+			next();
+			pri->setString(String());
+			next();
+			if(this->isRightPth()) {
+				next();
+			} else {
+				throwSyntaxWrong("a right pth ')'");
+				return 0x0;
+			}
+		} else {
+			throwSyntaxWrong("a left pth '('");
+			return 0x0;
 		}
-		return stat;
+		return pri;
 	}
 }
 
+ProgramNode* Parser::program() {
+	printf("programNode\n");
+	ProgramNode* prog = new ProgramNode;
+	while (isProgamStart()) {
+		if(isPrintStatStart()) {
+			printf("isPrintStatStart\n");
+			prog->addStatement(printStat());
+		} else /* if(isAssignStatStart()) */ {
+			prog->addStatement(assignStat());
+		}
+	}
+	return prog;
+}
+
 int Parser::parsing() {
-	stat=statExpr();
+	prog=program();
 	return 0;
 }
 
 void Parser::showAST() {
-	if(stat) {
-		stat->show();
+	if(prog) {
+		prog->show();
 	}
 }
 
-StatExprNode *Parser::getAST() const {
-	return this->stat;
+ProgramNode *Parser::getAST() const {
+	return this->prog;
 }
+
 
 } // namespace compiler

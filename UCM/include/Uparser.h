@@ -23,7 +23,7 @@ namespace compiler {
 class Parser {
 private:
 	usint pos;
-	StatExprNode *stat;
+	ProgramNode *prog;
 	enum state {
 		ENDING = -1,
 		RUNNING
@@ -32,6 +32,7 @@ protected:
 	void throwSyntaxWrong(std::string exceptedStr);
 
 	bool isNumTerminal();
+	bool isStrTerminal();
 	bool isIdnTerminal();
 	bool isTermOp();
 	bool isExprOp();
@@ -43,12 +44,14 @@ protected:
 	bool isFactorStart();
 	bool isTermStart();
 	bool isExprStart();
-	bool isAssignStart();
-	bool isStatStart();
+	bool isAssignStatStart();
+	bool isPrintStatStart();
+	bool isProgamStart();
 
 	void next();
 	Terminal_Pointer getPos();
 	Terminal_Pointer number();
+	Terminal_Pointer String();
 	Terminal_Pointer identifier();
 	Terminal_Pointer termOp();
 	Terminal_Pointer exprOp();
@@ -57,14 +60,15 @@ protected:
 	FactorNode *factor();
 	TermNode *term();
 	ExprNode *expr();
-	AssignNode *assign();
-	StatExprNode *statExpr();
+	AssignStatNode *assignStat();
+	PrintStatNode *printStat();
+	ProgramNode *program();
 public:
 	Parser();
 	~Parser();
 	int parsing();
 	void showAST();
-	StatExprNode *getAST() const;
+	ProgramNode *getAST() const;
 };
 
 } // namespace compiler

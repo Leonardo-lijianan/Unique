@@ -1,0 +1,13 @@
+{
+    "Program": {
+        "statemets": {
+            "PrintFunc": {
+                "String": {
+                    "linerow": "1:7",
+                    "type": 2,
+                    "data": "\"666\""
+                }
+            }
+        }
+    }
+}

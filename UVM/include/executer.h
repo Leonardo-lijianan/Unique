@@ -3,8 +3,8 @@
 // Author: Kkasi
 // This is executing the byte code.
 
-#ifndef UNIQUE_UCM_EXECUTER_H_
-#define UNIQUE_UCM_EXECUTER_H_
+#ifndef UNIQUE_UVM_EXECUTER_H_
+#define UNIQUE_UVM_EXECUTER_H_
 
 #include <string>
 #include <vector>
@@ -20,20 +20,24 @@ private:
 	std::vector<ByteCode> bCodes;
 	std::stack<int> vstack;
 	std::vector<int> variablePool;
+	std::vector<std::string> constantStringPool;
 	usint ip;
 protected:
 	bool isVstackCode();
 	bool isOpCode();
 	bool isVarPoolCode();
+	bool isPriCode();
+	
 	void visitVstackCode();
 	void visitOpCode();
 	void visitVarPoolCode();
+	void visitPriCode();
 public:
-	Executer(std::vector<ByteCode> bCodes);
+	Executer(std::vector<ByteCode> bCodes, std::vector<std::string> constantStringPool);
 	~Executer();
 	void executing();
 };
 
 } // namespace virtualMachine
 
-#endif // UNIQUE_UCM_EXECUTER_H_
+#endif // UNIQUE_UVM_EXECUTER_H_

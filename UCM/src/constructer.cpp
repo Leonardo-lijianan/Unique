@@ -8,10 +8,10 @@
 namespace compiler {
 
 Constructer::Constructer()
-: stat(nullptr), idCur(0) {}
+: prog(nullptr), idCur(0) {}
 
-Constructer::Constructer(StatExprNode *stat)
-	: stat(stat), idCur(0) {}
+Constructer::Constructer(ProgramNode* prog)
+	: prog(prog), idCur(0) {}
 
 Constructer::~Constructer() {}
 
@@ -106,7 +106,7 @@ void Constructer::visitExprNode(ExprNode *expr) {
 	}
 }
 
-void Constructer::visitAssignNode(AssignNode *ass) {
+void Constructer::visitAssignStatNode(AssignStatNode *ass) {
 	if(ass->getFactor()) { // make exprNode
 		visitExprNode(ass->getFactor());
 		if(ass->getIdentifier() != INDEFINE) {
@@ -121,20 +121,57 @@ void Constructer::visitAssignNode(AssignNode *ass) {
 	}
 }
 
-void Constructer::visitStatExprNode(StatExprNode *stat) {
-	if(stat) {
-		for(int i=0;i<stat->getFactorSize();i++) {
-			visitAssignNode(stat->getFactor(i));
+void Constructer::visitPrintStatNode(PrintStatNode *pri) {
+	constantStringPool.push_back(tokenList_Main.getToken(pri->getString()).getData());
+	// @printf("Con:code:%x",0xF000 | (constantStringPool.size()-1));
+	makeByteCode(opCode::PRI, 0xF0 | (constantStringPool.size()-1));
+	printf("Constructer::visitPrintStatNode %d",constantStringPool.size());
+	// @for (usint i = 0; i < this->byteCode.size(); i++) {
+	// 	printf("->0x%x ",this->byteCode.at(i));
+	// }
+}
+
+void Constructer::visitProgramNode(ProgramNode* prog) {
+	if(!prog->statementEmpty()) { // dispatch statements
+		for (usint i = 0; i < prog->getStatementSize(); i++)
+		{
+			StatNode* st = prog->getStatement(i);
+			if (!st) continue;
+			// category() values: 0 = assign, 1 = print (adjust if different)
+			if (st->category() == 0) {
+				AssignStatNode* ass = dynamic_cast<AssignStatNode*>(st);
+				if (ass) {
+					visitAssignStatNode(ass);
+				}
+			} else if (st->category() == 1) {
+				PrintStatNode* pri = dynamic_cast<PrintStatNode*>(st);
+				if (pri) {
+					visitPrintStatNode(pri);
+					
+				}
+				
+			} else {
+				printf("[constructer]error:prog");
+				// unknown statement type - ignore or handle as needed
+			}
+			
 		}
 	}
 }
 
 void Constructer::constructing() {
-	visitStatExprNode(stat);
+	visitProgramNode(prog);
+	// @for (usint i = 0; i < this->byteCode.size(); i++) {
+	// 	printf("0x%x ",this->byteCode.at(i));
+	// }
 }
 
 std::vector<byte/*short*/> Constructer::getCode() const {
 	return this->byteCode;
+}
+
+std::vector<std::string> Constructer::getCsp() const {
+	return this->constantStringPool;
 }
 
 void Constructer::showByteCode() {

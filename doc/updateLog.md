@@ -1,8 +1,8 @@
 # Update Log
 
 ## [update] v0.0.1 2022.7.6 20:49
-1. First update
-2. Sopport lexeing and parsing
+1. First update.
+2. Sopport lexeing and parsing.
 3. Can make AST, but had't even printed AST node. 
 
 ## [update] v0.0.2 2022.7.7 10:46
@@ -36,6 +36,11 @@
 2. Fixed some bug.
 3. The compiler has some new debug operation. 
 
+# [update] v0.1.5 2025.10.28 16:00
+1. Add the print grammar.
+2. Enum of keyword is instead of keyword table.(To connect between lexer and parser better.)
+3. Fix the UVM's include files #define XXX_UCM_ -> XXX_UVM_.
+
 # Coming Soon
-1. Complete grammar.
+1. refactor the basic.
 2. More...

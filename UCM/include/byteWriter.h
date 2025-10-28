@@ -18,6 +18,7 @@ private:
 	std::string workDir;
 	std::string fileName;
 	std::vector<byte> code;
+	std::vector<std::string> constantStringPool;
 public:
 	ByteWriter();
 	ByteWriter(std::string workDir, std::string fileName);
@@ -25,6 +26,10 @@ public:
 
 	void setWorkDir(std::string workDir);
 	void setCode(std::vector<byte> code);
+	void setCsp(std::vector<std::string> csp);
+	void writeHead(std::ofstream& outf);
+	void writeConstantStringPool(std::ofstream& outf);
+	void writeCode(std::ofstream& outf);
 	void writing();
 };
 

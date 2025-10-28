@@ -8,8 +8,9 @@
 #include "bytePrjLoader.h"
 #include "executer.h"
 
+using namespace virtualMachine;
+
 int main(int argc, char **argv) {
-	using namespace virtualMachine;
 	/* head */
 	printf("Unique VM 0.1.4\n");
 	std::string fileName, workDir;
@@ -28,12 +29,12 @@ int main(int argc, char **argv) {
 	BytePrjLoader pler(workDir);
 	pler.initFile(fileName);
 	printf("[ByteProjectLoader] Loading complete!\n");
-	// printf("code:\n%s\n",.c_str());
+	
 
 	/* executing */
-	Executer executer(pler.getCodes());
+	Executer executer(pler.getCodes(),pler.getCsp());
 	executer.executing();
-	printf("[Executer] Executing complete!\n");
+	printf("\n[Executer] Executing complete!\n");
 
 	return 0;
 }

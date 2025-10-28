@@ -16,8 +16,9 @@ namespace compiler {
 
 class Constructer {
 private:
-	StatExprNode *stat;
+	ProgramNode *prog;
 	std::map<std::string,usint> variableTable;
+	std::vector<std::string> constantStringPool;
 	usint idCur;
 	std::vector<byte> byteCode;
 protected:
@@ -28,14 +29,17 @@ protected:
 	void visitFactorNode(FactorNode *fac);
 	void visitTermNode(TermNode *ter);
 	void visitExprNode(ExprNode *expr);
-	void visitAssignNode(AssignNode *ass);
-	void visitStatExprNode(StatExprNode *stat);
+
+	void visitAssignStatNode(AssignStatNode *ass);
+	void visitPrintStatNode(PrintStatNode *pri);
+	void visitProgramNode(ProgramNode* prog);
 public:
 	Constructer();
-	Constructer(StatExprNode *stat);
+	Constructer(ProgramNode* prog);
 	~Constructer();
 	void constructing();
 	std::vector<byte> getCode() const;
+	std::vector<std::string> getCsp() const;
 	void showByteCode();
 };
 

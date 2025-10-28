@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
 	fileNameBase = fileName.substr(0,fileName.find_last_of('.'));
 	ByteWriter bWriter(workDir,fileNameBase);
 	bWriter.setCode(constructer.getCode());
+	bWriter.setCsp(constructer.getCsp());
 	bWriter.writing();
 	printf("[ByteWriter] Writing complete!\n");
 	

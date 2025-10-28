@@ -38,6 +38,13 @@ static std::string keywordTable[] = {
 	"fun", "main", "ret"
 };
 
+enum keyword {
+	PRINT=0,
+	FUNC,
+	MAIN,
+	RET
+};
+
 enum tokenType getBraType(const char chr);
 enum tokenType getOpType(const char chr);
 

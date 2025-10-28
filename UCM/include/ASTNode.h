@@ -87,32 +87,67 @@ public:
 	Terminal_Pointer getOperator(usint index) const;
 	void show();
 };
+ 
+// statement -> assign | print
+class StatNode {
+public:
+	virtual ~StatNode() =default;
+	virtual usint category() = 0;
+	virtual void show() = 0;
+};
 
 // assign -> IDN ASS expr
-class AssignNode {
+class AssignStatNode: public StatNode {
 private:
 	Terminal_Pointer identifier;
 	ExprNode *factor;
 public:
-	AssignNode();
-	~AssignNode();
+	AssignStatNode();
+	~AssignStatNode() override;
 	void setIdentifier(Terminal_Pointer idn);
 	void setFactor(ExprNode *exprN);
 	Terminal_Pointer getIdentifier() const;
 	ExprNode *getFactor() const;
-	void show();
+	usint category() override;
+	void show() override;
 };
 
-// statExpr -> assign+
-class StatExprNode {
+// statExpr -> assign
+// class StatExprNode {
+// private:
+// 	std::vector<AssignNode*> factors;
+// public:
+// 	StatExprNode();
+// 	~StatExprNode();
+// 	usint getFactorSize() const;
+// 	void addFactor(AssignNode *fac);
+// 	AssignNode *getFactor(usint index) const;
+// 	void show();
+// };
+
+// print -> KEYWORD::PRINT PTHL (IDN | string | char) PTHR  
+class PrintStatNode: public StatNode {
 private:
-	std::vector<AssignNode*> factors;
+	Terminal_Pointer String;
 public:
-	StatExprNode();
-	~StatExprNode();
-	usint getFactorSize() const;
-	void addFactor(AssignNode *fac);
-	AssignNode *getFactor(usint index) const;
+	PrintStatNode();
+	~PrintStatNode() override;
+	void setString(Terminal_Pointer str);
+	Terminal_Pointer getString() const;
+	usint category() override;
+	void show() override;
+};
+
+class ProgramNode {
+private:
+	std::vector<StatNode*> statements;
+public:
+	ProgramNode();
+	~ProgramNode();
+	bool statementEmpty();
+	usint getStatementSize() const;
+	void addStatement(StatNode* stat);
+	StatNode *getStatement(usint index) const;
 	void show();
 };
 

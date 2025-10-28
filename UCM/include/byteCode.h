@@ -17,7 +17,9 @@ enum opCode {
 	MUL   = 0x0005,
 	DIV   = 0x0006,
 	LOAD  = 0x0007, // load [ip]
-	STORE = 0x0008 // store [ip]
+	STORE = 0x0008, // store [ip]
+	PRI = 0x0009, // print [string-ip]
+	CALL  = 0x000A  // call [func-ip] [ip]
 };
 
 } // namespace compiler

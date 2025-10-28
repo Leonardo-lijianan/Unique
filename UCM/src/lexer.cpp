@@ -127,7 +127,7 @@ void Lexer::next() {
 	if(isOutOfCodeRange()) {
 		printf("unique.compiler.lexer.PtrPosOutOfRandge Error:\n"\
 		 "\tRead ptr 'pos' is out of range.\n"\
-		 "\t(Is %d, but range max only is %d.)\n",pos,code.size());
+		 "\t(Is %d, but range max only is %d.)\n",pos+1,code.size());
 		exit(PtrPosOutOfRandge);
 	}
 	this->pos++;
@@ -153,21 +153,30 @@ void Lexer::Word() {
 		readData.push_back(code[pos]);
 		next();
 	}
-	for (int index = 0; index < 4; index++) {
-		if(readData==keywordTable[index]) {
-			addToken(Token(T_KEYWORD,readData,index));
-			return;
-		}
+	if (readData == "print") {
+		addToken(Token(T_KEYWORD,readData,keyword::PRINT));
+	} else if (readData == "func") {
+		addToken(Token(T_KEYWORD,readData,keyword::FUNC));
+	} else if (readData == "main") {
+		addToken(Token(T_KEYWORD,readData,keyword::MAIN));
+	} else if (readData == "ret") {
+		addToken(Token(T_KEYWORD,readData,keyword::RET));
+	} else {
+		addToken(Token(T_WORD,readData));
 	}
-	addToken(Token(T_WORD,readData));
 }
 
 void Lexer::String() {
-	while(!isOutOfCodeRange() && !(code[pos]=='\"')) {
+	if (isOutOfCodeRange()) { return; }
+	readData.push_back('\"');
+	next();
+	while (!(code[pos]=='\"')) {
 		readData.push_back(code[pos]);
 		next();
 	}
-	addToken(Token(T_STR,readData));
+	readData.push_back(code[pos]);
+	next();
+	addToken(Token(T_STR,readData));	
 }
 
 void Lexer::Oparetor() {
@@ -226,8 +235,10 @@ void Lexer::lexing() {
 		} else if (getBraType(code[pos])) { // is braket.
 			Braket();
 		} else if (code[pos]=='\"') { // is double quotation mark
-			DoubleQuotationMark();
+			// next(); // skip "\""
+			// DoubleQuotationMark();
 			String();
+			// next(); // skip "\""
 		} else { // is unexecpted token.
 			printf("unique.compiler.lexer.UnexceptedToken Error:\n"\
 			 "\tIn line: %d row: %d, unexcepted token '%c'.\n",line,row,code[pos]);

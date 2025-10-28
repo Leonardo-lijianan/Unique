@@ -226,29 +226,33 @@ void   ExprNode::show() {
 
 /* class AssignNode */
 
-AssignNode::AssignNode()
+AssignStatNode::AssignStatNode()
 	: factor(nullptr) {
 }
 
-AssignNode::~AssignNode() {}
+AssignStatNode::~AssignStatNode() {}
 
-void AssignNode::setIdentifier(Terminal_Pointer idn) {
+void AssignStatNode::setIdentifier(Terminal_Pointer idn) {
 	this->identifier=idn;
 }
 
-void AssignNode::setFactor(ExprNode *exprN) {
+void AssignStatNode::setFactor(ExprNode *exprN) {
 	this->factor=exprN;
 }
 
-Terminal_Pointer AssignNode::getIdentifier() const {
+Terminal_Pointer AssignStatNode::getIdentifier() const {
 	return this->identifier;
 }
 
-ExprNode *AssignNode::getFactor() const {
+ExprNode *AssignStatNode::getFactor() const {
 	return this->factor;
 }
 
-void AssignNode::show() {
+usint AssignStatNode::category() {
+	return 0;
+}
+
+void AssignStatNode::show() {
 	if(identifier != INDEFINE) {
 		printf("{ \"Assign\": { \"identifier\": ");
 		tokenList_Main.getToken(identifier).show();
@@ -260,39 +264,110 @@ void AssignNode::show() {
 
 /* class StatExprNode */
 
-StatExprNode::StatExprNode() {}
+// StatExprNode::StatExprNode() {}
 
-StatExprNode::~StatExprNode() {
-	if(!factors.empty()) {
-		for(int i=0; i<factors.size(); i++) {
-			delete factors.at(i);
+// StatExprNode::~StatExprNode() {
+// 	if(!factors.empty()) {
+// 		for(int i=0; i<factors.size(); i++) {
+// 			delete factors.at(i);
+// 		}
+// 	}
+// }
+
+// usint StatExprNode::getFactorSize() const {
+// 	return factors.size();
+// }
+
+// void StatExprNode::addFactor(AssignNode *fac) {
+// 	factors.push_back(fac);
+// }
+
+// AssignNode *StatExprNode::getFactor(usint index) const {
+// 	if(!factors.empty()) {
+// 		return factors.at(index);
+// 	} else {
+// 		return 0x0;
+// 	}
+	
+// }
+
+// void StatExprNode::show() {
+// 	if(!factors.empty()) {
+// 		printf("{ \"StatExpr\": { \"factors\": [ ");
+// 		for(int i=0; i<factors.size(); i++) {
+// 			if(factors.at(i)!=0x0) {
+// 				factors.at(i)->show();
+// 				printf(", ");
+// 			}
+// 		}
+// 		printf("\b\b  \b\b ] } }\n");
+// 	}
+// }
+
+PrintStatNode::PrintStatNode()
+	: String(INDEFINE) {
+}
+
+PrintStatNode::~PrintStatNode() {}
+
+void PrintStatNode::setString(Terminal_Pointer str) {
+	this->String = str;
+}
+
+Terminal_Pointer PrintStatNode::getString() const {
+	return this->String;
+}
+
+usint PrintStatNode::category() {
+	return 1;
+}
+
+void PrintStatNode::show() {
+	if(String != INDEFINE) {
+		printf("\"PrintFunc\": { \"String\": ");
+		tokenList_Main.getToken(this->String).show();
+		printf(" }");
+	} else {
+		printf("??");
+	}
+}
+
+ProgramNode::ProgramNode() {}
+
+ProgramNode::~ProgramNode() {
+	if(!statements.empty()) {
+		for(int i=0; i<statements.size(); i++) {
+			delete statements.at(i);
 		}
 	}
 }
 
-usint StatExprNode::getFactorSize() const {
-	return factors.size();
+bool ProgramNode::statementEmpty() {
+	return statements.empty();
 }
 
-void StatExprNode::addFactor(AssignNode *fac) {
-	factors.push_back(fac);
+usint ProgramNode::getStatementSize() const {
+	return this->statements.size();
 }
 
-AssignNode *StatExprNode::getFactor(usint index) const {
-	if(!factors.empty()) {
-		return factors.at(index);
+void ProgramNode::addStatement(StatNode* stat) {
+	statements.push_back(stat);
+}
+
+StatNode* ProgramNode::getStatement(usint index) const {
+	if(!statements.empty()) {
+		return statements.at(index);
 	} else {
 		return 0x0;
 	}
-	
 }
 
-void StatExprNode::show() {
-	if(!factors.empty()) {
-		printf("{ \"StatExpr\": { \"factors\": [ ");
-		for(int i=0; i<factors.size(); i++) {
-			if(factors.at(i)!=0x0) {
-				factors.at(i)->show();
+void ProgramNode::show() {
+	if(!statements.empty()) {
+		printf("{ \"Program\": { \"statemets\": [ ");
+		for(int i=0; i<statements.size(); i++) {
+			if(statements.at(i)!=0x0) {
+				statements.at(i)->show();
 				printf(", ");
 			}
 		}

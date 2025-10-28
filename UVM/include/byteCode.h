@@ -3,8 +3,8 @@
 // Author: Kkasi
 // This define opCodes.
 
-#ifndef UNIQUE_UCM_BYTECODE_
-#define UNIQUE_UCM_BYTECODE_
+#ifndef UNIQUE_UVM_BYTECODE_
+#define UNIQUE_UVM_BYTECODE_
 
 namespace virtualMachine {
 
@@ -17,7 +17,9 @@ enum opCode {
 	MUL   = 0x0005,
 	DIV   = 0x0006,
 	LOAD  = 0x0007, // load [ip]
-	STORE = 0x0008 // store [ip]
+	STORE = 0x0008, // store [ip]
+	PRI = 0x0009,   // print [string-ip]
+	CALL  = 0x000A  // call [func-ip] [ip]
 };
 
 class ByteCode {
@@ -35,4 +37,4 @@ public:
 
 } // namespace virtualMachine
 
-#endif // UNIQUE_UCM_BYTECODE_
+#endif // UNIQUE_UVM_BYTECODE_

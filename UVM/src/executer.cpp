@@ -4,11 +4,12 @@
 // This is executing the byte code.
 
 #include "executer.h"
+#include <unistd.h>
 
 namespace virtualMachine {
 
-Executer::Executer(std::vector<ByteCode> bCodes)
-	: bCodes(bCodes),ip(0) {
+Executer::Executer(std::vector<ByteCode> bCodes, std::vector<std::string> constantStringPool)
+	: bCodes(bCodes), constantStringPool(constantStringPool), ip(0) {
 }
 
 Executer::~Executer() {}
@@ -36,6 +37,10 @@ void Executer::visitVstackCode() {
 		case POP:  vstack.pop(); break;
 		default: break;
 	}
+}
+
+bool Executer::isPriCode() {
+	return bCodes.at(ip).getOpCode() == opCode::PRI;
 }
 
 void Executer::visitOpCode() {
@@ -71,7 +76,16 @@ void Executer::visitVarPoolCode() {
 	}
 }
 
+void Executer::visitPriCode() {
+	ByteCode bCode = bCodes.at(ip);
+	if(bCode.getOperand()>=(byte)0xF0) {
+		const char* output = constantStringPool.at(bCode.getOperand() & 0x0F).c_str();
+		write(STDOUT_FILENO, output, strlen(output));
+	}
+}
+
 void Executer::executing() {
+	printf("\nIO-start>\n");
 	ip=0;
 	while(bCodes.size()>ip) {
 		if(isVstackCode()) {
@@ -80,11 +94,14 @@ void Executer::executing() {
 			visitOpCode();
 		} else if (isVarPoolCode()) {
 			visitVarPoolCode();
+		} else if(isPriCode()) {
+			visitPriCode();
 		} else {
 			return;
 		}
 		ip++;
 	}
+	printf("\nIO-end>\n");
 	for(int i=0;i<variablePool.size();i++) {
 		printf("[Executer] %d : %d\n",i,variablePool.at(i));
 	}

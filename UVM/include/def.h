@@ -3,8 +3,8 @@
 // Author: Kkasi
 // This define something.
 
-#ifndef UNIQUE_UCM_DEF_H_
-#define UNIQUE_UCM_DEF_H_
+#ifndef UNIQUE_UVM_DEF_H_
+#define UNIQUE_UVM_DEF_H_
 
 namespace virtualMachine {
 
@@ -17,4 +17,4 @@ enum errType {
 
 } // namespace virtualMachine
 
-#endif // UNIQUE_UCM_DEF_H_
+#endif // UNIQUE_UVM_DEF_H_
